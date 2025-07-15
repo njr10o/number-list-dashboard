@@ -9,27 +9,16 @@ export default function NumberListDashboard() {
 
   useEffect(() => {
     axios.get('/api/countries')
-      .then(res => setCountries(res.data))
-      .catch(() => setCountries([{ name: 'India', flag: '🇮🇳' },
-    { name: 'USA', flag: '🇺🇸' },   
-    { name: 'UK', flag: '🇬🇧' },
-    { name: 'Canada', flag: '🇨🇦' },
-    { name: 'Australia', flag: '🇦🇺' },
-    { name: 'Germany', flag: '🇩🇪' },
-    { name: 'France', flag: '🇫🇷' },
-    { name: 'Japan', flag: '🇯🇵' },
-    { name: 'China', flag: '🇨🇳' },
-    { name: 'Brazil', flag: '🇧🇷' },
-    { name: 'Italy', flag: '🇮🇹' },
-    { name: 'Spain', flag: '🇪🇸' },
-    { name: 'Netherlands', flag: '🇳🇱' },
-    { name: 'Sweden', flag: '🇸🇪' },
-    { name: 'Norway', flag: '🇳🇴' },
-    { name: 'Russia', flag: '🇷🇺' },
-    { name: 'South Korea', flag: '🇰🇷' },
-    { name: 'Mexico', flag: '🇲🇽' },
-    { name: 'Argentina', flag: '🇦🇷' },
-    { name: 'South Africa', flag: '🇿🇦'} ]));
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setCountries(res.data);
+        } else if (Array.isArray(res.data.countries)) {
+          setCountries(res.data.countries);
+        } else {
+          setCountries([]);
+        }
+      })
+      .catch(() => setCountries([{ name: 'India', flag: '🇮🇳' }, { name: 'USA', flag: '🇺🇸' }]));
 
     axios.get('/api/number-stats')
       .then(res => setNumberStats(res.data))
@@ -70,7 +59,7 @@ export default function NumberListDashboard() {
           <label className="block font-semibold mb-1">Select Country</label>
           <div className="flex items-center space-x-2">
             <select value={country} onChange={(e) => setCountry(e.target.value)} className="flex-1 px-3 py-2 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 focus:outline-none text-black">
-              {countries.map(c => (
+              {Array.isArray(countries) && countries.map(c => (
                 <option key={c.name} value={c.name} className="text-black">{c.flag} {c.name}</option>
               ))}
             </select>
